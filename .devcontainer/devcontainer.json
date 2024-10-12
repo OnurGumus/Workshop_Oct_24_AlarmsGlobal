@@ -1,0 +1,62 @@
+{
+    "name": "Alarms.Global Workshop",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-bookworm",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"installYarnUsingApt": true,
+			"version": "lts",
+			"pnpmVersion": "latest",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/powershell:1": {
+			"version": "latest"
+		}
+	},
+    "forwardPorts": [10200, 10201],
+	"portsAttributes": {
+			"10201": {
+				"protocol": "https"
+			}
+	},
+    "containerEnv": {
+		"ASPNETCORE_Kestrel__Certificates__Default__Password": "crypticpassword",
+		"ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/aspnetapp.pfx",
+		"ASPNETCORE_ENVIRONMENT":"Development",
+		"ASPNETCORE_HTTPS_PORTS":"10201",
+		"ASPNETCORE_HTTP_PORTS":"10200",
+		"DOTNET_WATCH_SUPPRESS_BROWSER_REFRESH":"true"
+	},
+    "mounts": [ 
+		"source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind",
+	 ],
+   //  "postCreateCommand":  "./postbuild.sh",
+	// Configure tool-specific properties.
+	// "customizations": {},
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {	
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-dotnettools.vscode-dotnet-runtime",
+				"ms-dotnettools.csharp",
+				"Ionide.Ionide-fsharp",
+				"ionide.mechanic",
+				"alfonsogarciacaro.vscode-template-fsharp-highlight",
+				"alexkrechik.cucumberautocomplete",
+				"bierner.lit-html",
+				"ionide.ionide-paket",
+				"ionide.ionide-fake",
+				"fernandoescolar.vscode-solution-explorer",
+                "github.copilot",
+				"github.copilot-labs",
+				"ms-vsliveshare.vsliveshare"
+			]
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	 "remoteUser": "root"
+
+}
