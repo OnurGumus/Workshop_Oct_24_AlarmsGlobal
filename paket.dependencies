@@ -4,3 +4,5 @@ storage: none
 framework:auto-detect
 nuget FSharp.Core
 nuget Giraffe
+nuget Scriban
+nuget FSharp.Data.LiteralProviders
