@@ -7,6 +7,7 @@ open Giraffe
 open Scriban
 open FSharp.Data.LiteralProviders
 open System.IO
+open Google.Apis.Auth
 
 /// Renders the master template with the provided body content.
 let renderInMaster (body: string) : HttpHandler =
@@ -40,12 +41,21 @@ let indexHandler : HttpHandler =
             return! renderInMaster body next ctx
         }
 
+let signGoogleHandler : HttpHandler = 
+    fun next ctx ->
+        task {
+            let credentials = ctx.Request.Form["credential"][0]
+            let! payload = GoogleJsonWebSignature.ValidateAsync(credentials)
+            printfn "User ID: %s" payload.Email
+
+            return! text "Sign in with Google" next ctx
+        }
 
 let handlers =
     choose [
         GET
         >=> route "/">=> indexHandler
-        
+        POST >=> route "/signin-google" >=> signGoogleHandler
         GET >=> route "/api/hello" >=> text "Hello API"
     ]
 

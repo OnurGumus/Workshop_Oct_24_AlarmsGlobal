@@ -6,3 +6,4 @@ nuget FSharp.Core
 nuget Giraffe
 nuget Scriban
 nuget FSharp.Data.LiteralProviders
+nuget Google.Apis.Auth

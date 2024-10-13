@@ -2,3 +2,4 @@ Giraffe
 FSharp.Core
 Scriban
 FSharp.Data.LiteralProviders
+Google.Apis.Auth
