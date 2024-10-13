@@ -45,14 +45,18 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
             }
 
         member _.Subscribe(cb, cancellationToken) = ()
-        member _.Subscribe(filter, take, cb, cancellationToken) = async { return () }
+        member _.Subscribe(filter, take, cb, cancellationToken) = 
+                async { 
+                    return () 
+            }
 
-    member _.Reset() = 
+    member this.Reset() = 
         Migrations.reset config
+        this.Init()
 
 
     member _.Init() = 
+        Migrations.init config
         queryApi <- AlarmsGlobal.Query.API.queryApi config
         commandApi <- AlarmsGlobal.Query.API.Command.api config
-        Migrations.init config
 

@@ -12,44 +12,53 @@ open AlarmsGlobal.Shared.Model
 open AlarmsGlobal.ServerInterfaces.Query
 open AlarmsGlobal.Shared.Model.Authentication
 open System.Threading
+open Microsoft.Extensions.Logging
+
 let lockObj = obj ()
+
 let prepareClaimsPrincipal (email: Email) (name: ShortString option) (env: _) =
     let config = env :> IConfiguration
     let auth = env :> IAuthentication
     let query = env :> IQuery
+    let loggerf = env :> ILoggerFactory
     let userClientId = Email email
     let userClientIdString = userClientId.ToString()
 
     async {
-        let filter = Predicate.Equal("ClientId", userClientIdString)
-        let! users = query.Query<LinkedIdentity>(filter = filter , take = 1)
-        let! user = 
-            match users with
-            | [] ->  
-            lock lockObj (fun () ->
-                async{
-                    // query again
-                    let! users = query.Query<LinkedIdentity>(filter = filter, take = 1)
-                    match users with
-                    | []  -> 
-                        let cid = CID.CreateNew()
-                        let subs = query.Subscribe ((fun e -> e.CID = cid) , 1, ignore, CancellationToken.None) 
-                        let! _ = auth.LinkIdentity cid None userClientId
-                        do! subs
-                        let! users = query.Query<LinkedIdentity>(filter =filter, take = 1)
-                        return users |> List.head
+        let linkedQuery =
+            query.Query<LinkedIdentity>(Equal("ClientId", userClientIdString), take = 1)
 
-                    | user :: _ ->return user
-                }
-            )
-            | user::_ -> async { return  user }
+        let! users = linkedQuery
+
+        let! user =
+            match users with
+            | [] ->
+                lock lockObj (fun () ->
+                    async {
+                        // query again
+                        let! users = linkedQuery
+
+                        match users with
+                        | [] ->
+                            let cid = CID.CreateNew()
+
+                            let subs =
+                                query.Subscribe((fun e -> e.CID = cid), 1, ignore, CancellationToken.None) |> Async.StartImmediateAsTask
+                            let! _ = auth.LinkIdentity cid None userClientId
+                            do! subs |> Async.AwaitTask
+                            let! users = linkedQuery
+                            return users |> List.head
+
+                        | user :: _ -> return user
+                    })
+            | user :: _ -> async { return user }
 
         let admins =
-                config.GetSection("config:admins").AsEnumerable()
-                |> Seq.map (fun x -> x.Value)
-                |> Seq.filter (isNull >> not)
-                |> Set.ofSeq
-    
+            config.GetSection("config:admins").AsEnumerable()
+            |> Seq.map (fun x -> x.Value)
+            |> Seq.filter (isNull >> not)
+            |> Set.ofSeq
+
         let clientEmail =
             match user.ClientId with
             | Email x -> x
@@ -79,7 +88,7 @@ let prepareClaimsPrincipal (email: Email) (name: ShortString option) (env: _) =
 
     }
 
-let signGoogleHandler (env : _): HttpHandler =
+let signGoogleHandler (env: _) : HttpHandler =
     fun next ctx ->
         task {
             let credentials = ctx.Request.Form["credential"][0]
@@ -99,9 +108,13 @@ let signGoogleHandler (env : _): HttpHandler =
 
 let signOutHandler: HttpHandler =
     fun next ctx ->
-        task{
+        task {
             ctx.Response.Headers.Add("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\", \"executionContexts\"")
-            do! ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme) |> Async.AwaitTask
+
+            do!
+                ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme)
+                |> Async.AwaitTask
+
             ctx.SetHttpHeader("Location", "/")
             return! setStatusCode 303 earlyReturn ctx
         }

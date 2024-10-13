@@ -14,38 +14,47 @@ open Authentication
 open Serilog
 open AlarmsGlobal.Environments
 open Hocon.Extensions.Configuration
+open Microsoft.AspNetCore.Http
 
-bootstrapLogger()
+bootstrapLogger ()
 
-/// Renders the master template with the provided body content.
+module Templates =
+    let master = TextFile.wwwroot.html.``master.html``.Text
+    let index = TextFile.wwwroot.html.``index.html``.Text
+    let app = TextFile.wwwroot.html.``app.html``.Text
+
+let (|Development|Prod|) (ctx: HttpContext) =
+    if ctx.GetWebHostEnvironment().EnvironmentName = Environments.Development then
+        Development
+    else
+        Prod
+
 let renderInMaster (body: string) : HttpHandler =
     fun next ctx ->
         task {
             let masterTemplate =
-#if !DEBUG
-                TextFile.wwwroot.html.``master.html``.Text
-#else
-                File.ReadAllText TextFile.wwwroot.html.``master.html``.Path
-#endif
+                match ctx with
+                | Development -> File.ReadAllText TextFile.wwwroot.html.``master.html``.Path
+                | Prod -> Templates.master
+
             let template = Template.Parse(masterTemplate)
             let! page = template.RenderAsync({| body = body |})
             return! htmlString page next ctx
         }
 
-let indexPage (dataloginurl: string) =
+let indexPage (ctx: HttpContext) (dataloginurl: string) =
     let template =
-#if !DEBUG
-        TextFile.wwwroot.html.``index.html``.Text
-#else
-        File.ReadAllText TextFile.wwwroot.html.``index.html``.Path
-#endif
+        match ctx with
+        | Development -> File.ReadAllText TextFile.wwwroot.html.``index.html``.Path
+        | Prod -> Templates.index
+
     Template.Parse(template).RenderAsync({| dataloginurl = dataloginurl |}).AsTask()
 
 let indexHandler: HttpHandler =
     fun next ctx ->
         task {
             let dataloginurl = "https://localhost:10201/signin-google"
-            let! body = indexPage (dataloginurl)
+            let! body = indexPage ctx (dataloginurl)
             return! renderInMaster body next ctx
         }
 
@@ -53,13 +62,17 @@ let appHandler: HttpHandler =
     fun next ctx ->
         task {
             let isAuth = ctx.User.Identity.IsAuthenticated
+
             if not isAuth then
                 return! setStatusCode 401 earlyReturn ctx
             else
-            let template =
-                File.ReadAllText TextFile.wwwroot.html.``app.html``.Path
-            let! body =Template.Parse(template).RenderAsync().AsTask()
-            return! renderInMaster body next ctx
+                let template =
+                    match ctx with
+                    | Development -> File.ReadAllText TextFile.wwwroot.html.``app.html``.Path
+                    | Prod -> Templates.app
+
+                let! body = Template.Parse(template).RenderAsync().AsTask()
+                return! renderInMaster body next ctx
         }
 
 let handlers env =
@@ -68,7 +81,6 @@ let handlers env =
         GET >=> route "/app" >=> appHandler
         POST >=> route "/signout" >=> signOutHandler
         POST >=> route "/signin-google" >=> signGoogleHandler env
-        GET >=> route "/api/hello" >=> text "Hello API"
     ]
 
 let authenticationOptions (opt: AuthenticationOptions) =
@@ -82,6 +94,7 @@ type Startup(config: IConfiguration) =
         services.AddAuthorization() |> ignore
         services.AddAuthentication(authenticationOptions).AddCookie() |> ignore
         services.AddSingleton<AppEnv>() |> ignore
+
         services.Configure<CookieAuthenticationOptions>(
             CookieAuthenticationDefaults.AuthenticationScheme,
             fun (options: CookieAuthenticationOptions) ->
@@ -91,8 +104,9 @@ type Startup(config: IConfiguration) =
         )
         |> ignore
 
-    member __.Configure(app: IApplicationBuilder, env: IWebHostEnvironment, appEnv:AppEnv) =
+    member __.Configure(app: IApplicationBuilder, env: IWebHostEnvironment, appEnv: AppEnv) =
         appEnv.Init()
+
         app
             .UseAuthentication()
             .UseAuthorization()
@@ -106,11 +120,11 @@ let main argv =
     Host
         .CreateDefaultBuilder()
         .ConfigureAppConfiguration(fun _ configBuilder ->
-        configBuilder
-            .AddHoconFile("config.hocon", true)
-            .AddHoconFile("secrets.hocon", false)
-            .AddEnvironmentVariables()
-        |> ignore)
+            configBuilder
+                .AddHoconFile("config.hocon", true)
+                .AddHoconFile("secrets.hocon", false)
+                .AddEnvironmentVariables()
+            |> ignore)
         .ConfigureWebHostDefaults(fun webBuilder -> webBuilder.UseStartup<Startup>() |> ignore)
         .UseSerilog(configureLogging)
         .Build()
