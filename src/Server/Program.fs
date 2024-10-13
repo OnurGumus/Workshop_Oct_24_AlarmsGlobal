@@ -12,6 +12,7 @@ open Microsoft.AspNetCore.Authentication.Cookies
 open System
 open Authentication
 open Serilog
+open AlarmsGlobal.Environments
 
 bootstrapLogger()
 
@@ -60,12 +61,12 @@ let appHandler: HttpHandler =
             return! renderInMaster body next ctx
         }
 
-let handlers =
+let handlers env =
     choose [
         GET >=> route "/" >=> indexHandler
         GET >=> route "/app" >=> appHandler
         POST >=> route "/signout" >=> signOutHandler
-        POST >=> route "/signin-google" >=> signGoogleHandler
+        POST >=> route "/signin-google" >=> signGoogleHandler env
         GET >=> route "/api/hello" >=> text "Hello API"
     ]
 
@@ -79,7 +80,7 @@ type Startup(config: IConfiguration) =
     member __.ConfigureServices(services: IServiceCollection) =
         services.AddAuthorization() |> ignore
         services.AddAuthentication(authenticationOptions).AddCookie() |> ignore
-
+        services.AddSingleton<AppEnv>() |> ignore
         services.Configure<CookieAuthenticationOptions>(
             CookieAuthenticationDefaults.AuthenticationScheme,
             fun (options: CookieAuthenticationOptions) ->
@@ -89,13 +90,14 @@ type Startup(config: IConfiguration) =
         )
         |> ignore
 
-    member __.Configure(app: IApplicationBuilder, env: IWebHostEnvironment) =
+    member __.Configure(app: IApplicationBuilder, env: IWebHostEnvironment, appEnv:AppEnv) =
+        appEnv.Init()
         app
             .UseAuthentication()
             .UseAuthorization()
             .UseSerilogRequestLogging()
             .UseStaticFiles()
-            .UseGiraffe(handlers)
+            .UseGiraffe(handlers appEnv)
 
 
 [<EntryPoint>]

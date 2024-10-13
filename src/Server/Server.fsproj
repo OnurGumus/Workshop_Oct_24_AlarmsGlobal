@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Serilog.fs" />
+    <Compile Include="Environments.fs" />
     <Compile Include="Authentication.fs" />
     <Compile Include="Program.fs" />
     <Content Include="wwwroot\html\master.html" />
@@ -15,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.fsproj" />
+    <ProjectReference Include="..\ServerInterfaces\ServerInterfaces.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
