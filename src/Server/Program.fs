@@ -7,7 +7,10 @@ open Giraffe
 open Scriban
 open FSharp.Data.LiteralProviders
 open System.IO
-open Google.Apis.Auth
+open Microsoft.AspNetCore.Authentication
+open Microsoft.AspNetCore.Authentication.Cookies
+open System
+open Authentication
 
 /// Renders the master template with the provided body content.
 let renderInMaster (body: string) : HttpHandler =
@@ -33,7 +36,7 @@ let indexPage (dataloginurl: string) =
 #endif
     Template.Parse(template).RenderAsync({| dataloginurl = dataloginurl |}).AsTask()
 
-let indexHandler : HttpHandler = 
+let indexHandler: HttpHandler =
     fun next ctx ->
         task {
             let dataloginurl = "https://localhost:10201/signin-google"
@@ -41,28 +44,39 @@ let indexHandler : HttpHandler =
             return! renderInMaster body next ctx
         }
 
-let signGoogleHandler : HttpHandler = 
-    fun next ctx ->
-        task {
-            let credentials = ctx.Request.Form["credential"][0]
-            let! payload = GoogleJsonWebSignature.ValidateAsync(credentials)
-            printfn "User ID: %s" payload.Email
-
-            return! text "Sign in with Google" next ctx
-        }
 
 let handlers =
     choose [
-        GET
-        >=> route "/">=> indexHandler
+        GET >=> route "/" >=> indexHandler
         POST >=> route "/signin-google" >=> signGoogleHandler
         GET >=> route "/api/hello" >=> text "Hello API"
     ]
 
-type Startup(config: IConfiguration) =
-    member __.ConfigureServices(services: IServiceCollection) = ()
+let authenticationOptions (opt: AuthenticationOptions) =
+    let auth = CookieAuthenticationDefaults.AuthenticationScheme
+    opt.DefaultScheme <- auth
+    opt.DefaultChallengeScheme <- auth
+    opt.DefaultAuthenticateScheme <- auth
 
-    member __.Configure(app: IApplicationBuilder, env: IWebHostEnvironment) = app.UseGiraffe(handlers)
+type Startup(config: IConfiguration) =
+    member __.ConfigureServices(services: IServiceCollection) =
+        services.AddAuthentication(authenticationOptions).AddCookie() |> ignore
+
+        services.Configure<CookieAuthenticationOptions>(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            fun (options: CookieAuthenticationOptions) ->
+                options.Cookie.Name <- "AlarmsGlobal.Auth"
+                options.ExpireTimeSpan <- TimeSpan.FromDays(7)
+                options.SlidingExpiration <- true
+        )
+        |> ignore
+
+    member __.Configure(app: IApplicationBuilder, env: IWebHostEnvironment) =
+        app
+            .UseAuthentication()
+            .UseAuthorization()
+            .UseStaticFiles()
+            .UseGiraffe(handlers)
 
 
 [<EntryPoint>]

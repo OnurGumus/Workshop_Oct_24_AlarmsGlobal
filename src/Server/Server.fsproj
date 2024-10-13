@@ -2,10 +2,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-     <InvariantGlobalization>true</InvariantGlobalization>
-     <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Authentication.fs" />
     <Compile Include="Program.fs" />
     <Content Include="wwwroot\html\master.html" />
     <Content Include="wwwroot\html\index.html" />
