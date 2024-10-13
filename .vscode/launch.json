@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+       
+        {
+            "name": "Launch Web",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Server",
+            "program": "${workspaceFolder}/src/Server/bin/Debug/net8.0/Server.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Server",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "justMyCode": true, // should be false, as we want to debug 3rd party source code
+            "requireExactSource": true, 
+            "suppressJITOptimizations": false, // it's better to set true for local debugging
+            "enableStepFiltering": false, // to step into properties
+            "symbolOptions": {
+                "searchMicrosoftSymbolServer": true, // get pdb files from ms symbol server
+               // "searchNuGetOrgSymbolServer": true,
+                "moduleFilter": {
+                    "mode": "loadAllButExcluded",
+                    "excludedModules": []
+                }
+            },
+           
+
+            // "env": {
+            //     "COMPlus_ZapDisable": "1",
+            //     "COMPlus_ReadyToRun": "0"
+            // }
+        }
+       
+    ]
+    
+}
