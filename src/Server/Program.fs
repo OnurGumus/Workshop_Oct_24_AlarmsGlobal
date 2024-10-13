@@ -60,6 +60,7 @@ let authenticationOptions (opt: AuthenticationOptions) =
 
 type Startup(config: IConfiguration) =
     member __.ConfigureServices(services: IServiceCollection) =
+        services.AddAuthorization() |> ignore
         services.AddAuthentication(authenticationOptions).AddCookie() |> ignore
 
         services.Configure<CookieAuthenticationOptions>(
