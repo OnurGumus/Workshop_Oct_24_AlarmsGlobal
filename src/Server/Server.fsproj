@@ -6,6 +6,7 @@
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Serilog.fs" />
     <Compile Include="Authentication.fs" />
     <Compile Include="Program.fs" />
     <Content Include="wwwroot\html\master.html" />

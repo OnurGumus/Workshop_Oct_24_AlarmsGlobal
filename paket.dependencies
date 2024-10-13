@@ -7,3 +7,11 @@ nuget Giraffe
 nuget Scriban
 nuget FSharp.Data.LiteralProviders
 nuget Google.Apis.Auth
+nuget Destructurama.FSharp
+nuget Serilog
+nuget Giraffe.SerilogExtensions
+nuget Serilog.Expressions
+nuget Serilog.AspNetCore
+nuget Serilog.Sinks.Seq
+nuget Serilog.Sinks.Console
+nuget Serilog.Sinks.File

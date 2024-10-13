@@ -11,6 +11,9 @@ open Microsoft.AspNetCore.Authentication
 open Microsoft.AspNetCore.Authentication.Cookies
 open System
 open Authentication
+open Serilog
+
+bootstrapLogger()
 
 /// Renders the master template with the provided body content.
 let renderInMaster (body: string) : HttpHandler =
@@ -76,6 +79,7 @@ type Startup(config: IConfiguration) =
         app
             .UseAuthentication()
             .UseAuthorization()
+            .UseSerilogRequestLogging()
             .UseStaticFiles()
             .UseGiraffe(handlers)
 
@@ -85,6 +89,7 @@ let main argv =
     Host
         .CreateDefaultBuilder()
         .ConfigureWebHostDefaults(fun webBuilder -> webBuilder.UseStartup<Startup>() |> ignore)
+        .UseSerilog(configureLogging)
         .Build()
         .Run()
 
