@@ -31,7 +31,7 @@
     "mounts": [ 
 		"source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind",
 	 ],
-   //  "postCreateCommand":  "./postbuild.sh",
+   "postCreateCommand":  "./postbuild.sh",
 	// Configure tool-specific properties.
 	// "customizations": {},
 	"customizations": {
