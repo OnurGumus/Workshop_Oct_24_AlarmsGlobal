@@ -16,3 +16,9 @@ nuget Serilog.Sinks.Seq
 nuget Serilog.Sinks.Console
 nuget Serilog.Sinks.File
 nuget Hocon.Extensions.Configuration
+nuget FSharp.Core
+nuget FluentMigrator.Runner.SQLite
+nuget FCQRS.Serialization
+nuget FCQRS.SQLProvider
+nuget Microsoft.Data.Sqlite
+nuget SQLitePCLRaw.core

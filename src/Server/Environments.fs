@@ -47,6 +47,10 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
         member _.Subscribe(cb, cancellationToken) = ()
         member _.Subscribe(filter, take, cb, cancellationToken) = async { return () }
 
-    member _.Reset() = ()
+    member _.Reset() = 
+        Migrations.reset config
 
-    member _.Init() = ()
+
+    member _.Init() = 
+        Migrations.init config
+

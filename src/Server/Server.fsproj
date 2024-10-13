@@ -20,5 +20,8 @@
     <Content Include="config.hocon" />
     <Content Include="secrets.hocon" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Query\Query.fsproj" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
