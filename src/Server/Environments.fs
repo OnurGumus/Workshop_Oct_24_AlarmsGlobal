@@ -34,8 +34,8 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
         member _.GetSection key = config.GetSection(key)
 
     interface IAuthentication with
-        member this.LinkIdentity(cid: CID) : LinkIdentity = failwith "Not Implemented"
-        member this.UnlinkIdentity(arg1: CID) : UnlinkIdentity = failwith "Not Implemented"
+        member this.LinkIdentity(cid: CID) : LinkIdentity = commandApi.LinkedIdentity
+        member this.UnlinkIdentity(arg1: CID) : UnlinkIdentity = commandApi.UnlinkedIdentity
 
     interface IQuery with
         member _.Query<'t>(?filter, ?orderby, ?orderbydesc, ?thenby, ?thenbydesc, ?take, ?skip, ?cacheKey) =
@@ -52,5 +52,7 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
 
 
     member _.Init() = 
+        queryApi <- AlarmsGlobal.Query.API.queryApi config
+        commandApi <- AlarmsGlobal.Query.API.Command.api config
         Migrations.init config
 
