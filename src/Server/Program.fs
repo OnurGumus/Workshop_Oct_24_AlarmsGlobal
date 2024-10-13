@@ -13,6 +13,7 @@ open System
 open Authentication
 open Serilog
 open AlarmsGlobal.Environments
+open Hocon.Extensions.Configuration
 
 bootstrapLogger()
 
@@ -104,6 +105,12 @@ type Startup(config: IConfiguration) =
 let main argv =
     Host
         .CreateDefaultBuilder()
+        .ConfigureAppConfiguration(fun _ configBuilder ->
+        configBuilder
+            .AddHoconFile("config.hocon", true)
+            .AddHoconFile("secrets.hocon", false)
+            .AddEnvironmentVariables()
+        |> ignore)
         .ConfigureWebHostDefaults(fun webBuilder -> webBuilder.UseStartup<Startup>() |> ignore)
         .UseSerilog(configureLogging)
         .Build()

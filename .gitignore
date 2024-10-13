@@ -2,3 +2,4 @@ bin/
 obj/
 *.cached
 logs/
+src/Server/secrets.hocon

@@ -1,0 +1,4 @@
+config {
+         connection-string = "Data Source=Database/AlarmsGlobal.db;"
+         admins = ["emperon@gmail.com","onur@outlook.com.tr"]
+}
