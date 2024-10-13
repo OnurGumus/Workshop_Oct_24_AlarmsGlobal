@@ -47,10 +47,24 @@ let indexHandler: HttpHandler =
             return! renderInMaster body next ctx
         }
 
+let appHandler: HttpHandler =
+    fun next ctx ->
+        task {
+            let isAuth = ctx.User.Identity.IsAuthenticated
+            if not isAuth then
+                return! setStatusCode 401 earlyReturn ctx
+            else
+            let template =
+                File.ReadAllText TextFile.wwwroot.html.``app.html``.Path
+            let! body =Template.Parse(template).RenderAsync().AsTask()
+            return! renderInMaster body next ctx
+        }
 
 let handlers =
     choose [
         GET >=> route "/" >=> indexHandler
+        GET >=> route "/app" >=> appHandler
+        POST >=> route "/signout" >=> signOutHandler
         POST >=> route "/signin-google" >=> signGoogleHandler
         GET >=> route "/api/hello" >=> text "Hello API"
     ]

@@ -20,5 +20,15 @@ let signGoogleHandler: HttpHandler =
             let p = new ClaimsPrincipal(identity)
             do! ctx.SignInAsync(p, authProps) |> Async.AwaitTask
 
-            return! text "Sign in with Google" next ctx
+            ctx.SetHttpHeader("Location", "/app")
+            return! setStatusCode 303 earlyReturn ctx
+        }
+
+let signOutHandler: HttpHandler =
+    fun next ctx ->
+        task{
+            ctx.Response.Headers.Add("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\", \"executionContexts\"")
+            do! ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme) |> Async.AwaitTask
+            ctx.SetHttpHeader("Location", "/")
+            return! setStatusCode 303 earlyReturn ctx
         }
