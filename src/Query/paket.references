@@ -2,5 +2,5 @@ FSharp.Core
 FluentMigrator.Runner.SQLite
 FCQRS.Serialization
 FCQRS.SQLProvider
+FCQRS.Model
 Microsoft.Data.Sqlite
-SQLitePCLRaw.core

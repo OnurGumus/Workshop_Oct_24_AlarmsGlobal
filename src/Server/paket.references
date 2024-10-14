@@ -13,3 +13,4 @@ Serilog.Sinks.Console
 Serilog.Sinks.File
 Hocon.Extensions.Configuration
 FCQRS.Model
+FCQRS
