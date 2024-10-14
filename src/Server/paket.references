@@ -3,12 +3,13 @@ FSharp.Core
 Scriban
 FSharp.Data.LiteralProviders
 Google.Apis.Auth
-nuget Destructurama.FSharp
-nuget Serilog
-nuget Giraffe.SerilogExtensions
-nuget Serilog.Expressions
-nuget Serilog.AspNetCore
-nuget Serilog.Sinks.Seq
-nuget Serilog.Sinks.Console
-nuget Serilog.Sinks.File
-nuget Hocon.Extensions.Configuration
+Destructurama.FSharp
+Serilog
+Giraffe.SerilogExtensions
+Serilog.Expressions
+Serilog.AspNetCore
+Serilog.Sinks.Seq
+Serilog.Sinks.Console
+Serilog.Sinks.File
+Hocon.Extensions.Configuration
+FCQRS.Model

@@ -6,6 +6,8 @@ open AlarmsGlobal.ServerInterfaces.Query
 open System
 open Microsoft.Extensions.Logging
 open Shared.Command.Authentication
+open FCQRS.ModelQuery
+open FCQRS.Model
 
 type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
 
@@ -35,7 +37,7 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
 
     interface IAuthentication with
         member this.LinkIdentity(cid: CID) : LinkIdentity = commandApi.LinkedIdentity
-        member this.UnlinkIdentity(arg1: CID) : UnlinkIdentity = commandApi.UnlinkedIdentity
+        member this.UnlinkIdentity(cid: CID) : UnlinkIdentity = commandApi.UnlinkedIdentity
 
     interface IQuery with
         member _.Query<'t>(?filter, ?orderby, ?orderbydesc, ?thenby, ?thenbydesc, ?take, ?skip, ?cacheKey) =

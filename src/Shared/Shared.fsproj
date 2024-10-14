@@ -4,7 +4,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Fable.Validation.fs" />
     <Compile Include="Model.fs" />
     <Compile Include="Command.fs" />
     <Content Include="paket.references" />

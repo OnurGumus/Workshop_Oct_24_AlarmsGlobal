@@ -13,6 +13,8 @@ open AlarmsGlobal.ServerInterfaces.Query
 open AlarmsGlobal.Shared.Model.Authentication
 open System.Threading
 open Microsoft.Extensions.Logging
+open FCQRS.ModelQuery
+open FCQRS.Model
 
 let lockObj = obj ()
 

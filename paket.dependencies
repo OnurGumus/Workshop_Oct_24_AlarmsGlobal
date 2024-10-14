@@ -22,3 +22,5 @@ nuget FCQRS.Serialization
 nuget FCQRS.SQLProvider
 nuget Microsoft.Data.Sqlite
 nuget SQLitePCLRaw.core
+nuget FCQRS.Model
+nuget FCQRS.SqlProvider >= 1.0.4
