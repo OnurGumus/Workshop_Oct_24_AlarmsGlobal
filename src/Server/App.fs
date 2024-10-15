@@ -25,6 +25,7 @@ let appHandler env : HttpHandler =
 
                 let query = env :> IQuery<_>
                 let! regions = query.Query<Region>()
+                let subsciptions = query.Query<UserSubscription>()
 
     
 

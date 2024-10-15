@@ -166,19 +166,12 @@ module Subscription =
         Name: ShortString
     }
 
-    type SubscriptionCategory =
-        | PublicHolidays
-        | Other
-
+    
     type UserSubscription = {
-        Identity: Authentication.UserIdentity option
-        ReminderDays: int list
-        Tags: Tag list
-        Category: SubscriptionCategory list
+        Identity: Authentication.UserIdentity
         RegionId: RegionId
     }
 
-    type UserSetting = { Identity: Authentication.UserIdentity; BeforeDays: int }
 
     type GlobalEventId =
         | GlobalEventId of ShortString
@@ -197,21 +190,12 @@ module Subscription =
         static member Validate(s: LongString) =
             s.Value |> ShortString.TryCreate |> forceValidate
 
-    type Media = {
-        TwitterMedia: string option
-        TwitterMediaLink: string option
-        MailMediaLink: string option
-        MailMedia: string option
-        TwitterLink: string option
-    }
-
+    
     type GlobalEvent = {
         GlobalEventId: GlobalEventId
         Title: ShortString
         Body: LongString
-        Media: Media option
         Tags: Tag list
-        Categories: SubscriptionCategory list
         EventDateInUTC: DateTime option
         Source: ShortString option
         Impact: int option

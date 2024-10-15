@@ -14,20 +14,20 @@ let handle (ctx: Sql.dataContext) eventDetails cid =
 
     match eventDetails with
 
-    | Subscriptions.Subscribed(identity, regionId) ->
+    | Subscriptions.Subscribed(subscription) ->
 
         let row =
-            ctx.Main.Subscriptions.``Create(Document)`` (encodeToBytes (regionId, regionId))
+            ctx.Main.Subscriptions.``Create(Document)`` (encodeToBytes (subscription))
 
-        row.RegionId <- regionId.Value.Value
-        row.UserIdentity <- identity.Value.Value
+        row.RegionId <- subscription.RegionId.Value.Value
+        row.UserIdentity <- subscription.Identity.Value.Value
 
         let dataEvent: DataEvent<DataEventType> = {
-            Type = SubscriptionEvent(Subscribed(identity, regionId))
+            Type = SubscriptionEvent(Subscribed(subscription))
             CID = cid
         }
 
         Some dataEvent
 
-    | Subscriptions.Unsubscribed(clientId, userIdentity) -> failwith "not implemented"
+    | Subscriptions.Unsubscribed(subscription) -> failwith "not implemented"
     | _ -> None

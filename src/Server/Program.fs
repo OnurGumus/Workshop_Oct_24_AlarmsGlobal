@@ -29,7 +29,6 @@ open AlarmsGlobal.Shared.Model.Subscription
 bootstrapLogger ()
 
 module Templates =
-    let master = TextFile.wwwroot.html.``master.html``.Text
     let index = TextFile.wwwroot.html.``index.html``.Text
 
 
@@ -61,7 +60,8 @@ let subscribe env : HttpHandler =
             let form = ctx.Request.Form
             let region = form.["region"][0] |> RegionId.Create
             let identity = ctx.User.FindFirst(ClaimTypes.Name).Value |> UserIdentity.Create
-            let! _ = subs.Subscribe cid (Some identity) region
+            let userSubs  = { RegionId= region; Identity = identity }
+            let! _ = subs.Subscribe cid userSubs
             do! s |> Async.AwaitTask
             return! appHandler env next ctx
         }
@@ -97,7 +97,7 @@ type Startup(config: IConfiguration) =
         |> ignore
 
     member __.Configure(app: IApplicationBuilder, env: IWebHostEnvironment, appEnv: AppEnv) =
-        appEnv.Init()
+        appEnv.Reset()
 
         app
             .UseAuthentication()

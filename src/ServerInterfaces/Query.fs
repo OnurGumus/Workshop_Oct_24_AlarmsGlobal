@@ -13,8 +13,8 @@ type AutenticationEvent =
     | AccountUnlinked of UserIdentity * UserClientId
     
 type SubscriptionEvent =
-    | Subscribed of UserIdentity * RegionId
-    | Unsubscribed of UserIdentity * RegionId
+    | Subscribed of UserSubscription
+    | Unsubscribed of UserSubscription
 
 type DataEventType =
     | AutenticationEvent of AutenticationEvent

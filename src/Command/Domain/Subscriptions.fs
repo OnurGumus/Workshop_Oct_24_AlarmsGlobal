@@ -14,14 +14,14 @@ open AlarmsGlobal.Shared.Model.Authentication
 
 
 type Event =
-    | Subscribed of UserIdentity * RegionId
-    | Unsubscribed of UserIdentity * RegionId
+    | Subscribed of UserSubscription
+    | Unsubscribed of UserSubscription
     | EventPublished of GlobalEvent
 
 
 type Command =
-    | Subscribe of UserIdentity * RegionId
-    | Unsubscribe of UserIdentity * RegionId
+    | Subscribe of UserSubscription
+    | Unsubscribe of UserSubscription
     | PublishEvent of GlobalEvent
 
 
@@ -71,13 +71,13 @@ module Actor =
 
                         match commandDetails, state with
 
-                        | Subscribe (x,y), _ ->
-                            let subscribeEvent, v = Subscribed (x,y), (v + 1L)
+                        | Subscribe subs, _ ->
+                            let subscribeEvent, v = Subscribed subs, (v + 1L)
                             let outcome = toEvent ci v subscribeEvent |> input.SendToSagaStarter |> Persist
                             return! outcome
 
-                        | Unsubscribe (x,y), _ ->
-                            let subscribeEvent, v = Unsubscribed (x,y), (v + 1L)
+                        | Unsubscribe subs, _ ->
+                            let subscribeEvent, v = Unsubscribed subs, (v + 1L)
                             let outcome = toEvent ci v subscribeEvent |> input.SendToSagaStarter |> Persist
                             return! outcome
 
