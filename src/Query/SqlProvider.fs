@@ -29,7 +29,7 @@ type Sql =
         SQLiteLibrary=SQLiteLibrary.MicrosoftDataSqlite,
         ConnectionString=connectionString,
         ResolutionPath=resolutionPath,
-        //ContextSchemaPath=schemaLocation,
+       // ContextSchemaPath=schemaLocation,
         CaseSensitivityChange=CaseSensitivityChange.ORIGINAL
      >
 

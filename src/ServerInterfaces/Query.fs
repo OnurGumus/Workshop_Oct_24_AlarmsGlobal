@@ -6,14 +6,15 @@ open Command
 open System.Threading.Tasks
 open System.Threading
 open System
+open AlarmsGlobal.Shared.Model.Subscription
 
 type AutenticationEvent =
     | AccountLinked of UserIdentity * UserClientId
     | AccountUnlinked of UserIdentity * UserClientId
     
 type SubscriptionEvent =
-    | Subscribed of UserClientId * UserIdentity
-    | Unsubscribed of UserClientId * UserIdentity
+    | Subscribed of UserIdentity * RegionId
+    | Unsubscribed of UserIdentity * RegionId
 
 type DataEventType =
     | AutenticationEvent of AutenticationEvent

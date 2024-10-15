@@ -23,6 +23,8 @@ let handleEventWrapper (ctx: Sql.dataContext) (actorApi: IActor) (subQueue: ISou
 
             | :? Event<User.Event> as { EventDetails = eventDetails; CorrelationId = cid } ->
                 UserProjection.handle ctx eventDetails cid
+            | :? Event<Subscriptions.Event> as { EventDetails = eventDetails; CorrelationId = cid } ->
+                SubscriptionProjection.handle ctx eventDetails cid
                 
             | _ -> None
 

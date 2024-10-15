@@ -299,7 +299,7 @@ let regions =
     })
     |> List.ofSeq
 
-[<MigrationAttribute(2023_12_15_1340L)>]
+[<MigrationAttribute(2024_10_15_1340L)>]
 type AddRegions() =
     inherit AutoReversingMigration()
 
@@ -331,6 +331,23 @@ type AddRegions() =
 
             this.Insert.IntoTable("Regions").Row(row) |> ignore
 
+[<MigrationAttribute(2024_10_16_1340L)>]
+type AddSubscriptions() =
+    inherit AutoReversingMigration()
+
+    override this.Up() =
+        this.Create
+            .Table("Subscriptions")
+            .WithColumn("RegionId")
+            .AsString()
+            .PrimaryKey()
+            .WithColumn("UserIdentity")
+            .AsString()
+            .PrimaryKey()
+            .WithColumn("Document")
+            .AsBinary()
+        |> ignore
+        
 let updateDatabase (serviceProvider: IServiceProvider) =
     let runner = serviceProvider.GetRequiredService<IMigrationRunner>()
     runner.MigrateUp()
