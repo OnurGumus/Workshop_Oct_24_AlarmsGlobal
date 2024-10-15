@@ -7,6 +7,8 @@ open System.IO
 open Master
 open FCQRS.ModelQuery
 open AlarmsGlobal.Shared.Model.Subscription
+open FCQRS.Model
+open System.Security.Claims
 
 let appTemplate = TextFile.wwwroot.html.``app.html``.Text
 
@@ -25,13 +27,13 @@ let appHandler env : HttpHandler =
 
                 let query = env :> IQuery<_>
                 let! regions = query.Query<Region>()
-                let subsciptions = query.Query<UserSubscription>()
+                let! subsciptions = query.Query<UserSubscription>(Predicate.Equal("UserIdentity", ctx.User.FindFirst(ClaimTypes.Name).Value))
 
     
 
                 let regions =
                     regions |> List.map (fun r -> {| Id = r.RegionId.Value; Name = r.Name.Value |})
 
-                let! body = Template.Parse(template).RenderAsync({| regions = regions |}).AsTask()
+                let! body = Template.Parse(template).RenderAsync({| regions = regions; subscriptions = subsciptions |}).AsTask()
                 return! renderInMaster body next ctx
         }
