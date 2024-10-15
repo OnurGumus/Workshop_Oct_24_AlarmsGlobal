@@ -13,7 +13,7 @@ module Authentication =
 module Subscription =
     open Model.Subscription
 
-    type Subscribe = UserIdentity option -> UserSubscription -> Async<Result<Version, string list>>
-    type Unsubscribe = UserIdentity option -> UserSubscription -> Async<Result<Version, string list>>
+    type Subscribe = UserIdentity option -> RegionId -> Async<Result<Version, string list>>
+    type Unsubscribe = UserIdentity option -> RegionId -> Async<Result<Version, string list>>
 
     type PublishEvent = GlobalEvent -> Async<Result<Version, string list>>

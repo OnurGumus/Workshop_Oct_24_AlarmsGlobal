@@ -8,12 +8,11 @@ open FCQRS.Common
 open AlarmsGlobal.Command
 
 let subscribe (createSubs) : Subscribe =
-    fun id subscription ->
+    fun id regionid ->
         async {
-            let subscription = { subscription with Identity = id }
 
             let! subscribe =
-                createSubs ("Subscriptions") (Domain.Subscriptions.Command.Subscribe subscription) (function
+                createSubs ("Subscriptions") (Domain.Subscriptions.Command.Subscribe (id.Value,regionid)) (function
                     | Domain.Subscriptions.Subscribed _ -> true
                     | _ -> false)
 
@@ -26,12 +25,11 @@ let subscribe (createSubs) : Subscribe =
         }
 
 let unsubscribe (createSubs) : Unsubscribe =
-    fun id subscription ->
+    fun id regionid ->
         async {
-            let subscription = { subscription with Identity = id }
 
             let! subscribe =
-                createSubs ("Subscriptions") (Domain.Subscriptions.Command.Unsubscribe subscription) (function
+                createSubs ("Subscriptions") (Domain.Subscriptions.Command.Unsubscribe (id.Value,regionid)) (function
                     | Domain.Subscriptions.Unsubscribed _ -> true
                     | _ -> false)
 

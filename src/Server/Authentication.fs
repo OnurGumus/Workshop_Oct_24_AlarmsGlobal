@@ -5,11 +5,8 @@ open Google.Apis.Auth
 open Microsoft.AspNetCore.Authentication
 open Microsoft.AspNetCore.Authentication.Cookies
 open System.Security.Claims
-open AlarmsGlobal.Environments
 open Microsoft.Extensions.Configuration
 open AlarmsGlobal.ServerInterfaces.Command
-open AlarmsGlobal.Shared.Model
-open AlarmsGlobal.ServerInterfaces.Query
 open AlarmsGlobal.Shared.Model.Authentication
 open System.Threading
 open Microsoft.Extensions.Logging
@@ -21,7 +18,7 @@ let lockObj = obj ()
 let prepareClaimsPrincipal (email: Email) (name: ShortString option) (env: _) =
     let config = env :> IConfiguration
     let auth = env :> IAuthentication
-    let query = env :> IQuery<DataEventType>
+    let query = env :> IQuery<_>
     let loggerf = env :> ILoggerFactory
     let userClientId = Email email
     let userClientIdString = userClientId.ToString()

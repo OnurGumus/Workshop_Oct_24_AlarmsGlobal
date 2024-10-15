@@ -10,17 +10,18 @@ open Actor
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.Logging
 open AlarmsGlobal.Shared.Model.Subscription
+open AlarmsGlobal.Shared.Model.Authentication
 
 
 type Event =
-    | Subscribed of UserSubscription
-    | Unsubscribed of UserSubscription
+    | Subscribed of UserIdentity * RegionId
+    | Unsubscribed of UserIdentity * RegionId
     | EventPublished of GlobalEvent
 
 
 type Command =
-    | Subscribe of UserSubscription
-    | Unsubscribe of UserSubscription
+    | Subscribe of UserIdentity * RegionId
+    | Unsubscribe of UserIdentity * RegionId
     | PublishEvent of GlobalEvent
 
 
@@ -70,13 +71,13 @@ module Actor =
 
                         match commandDetails, state with
 
-                        | Subscribe subs, _ ->
-                            let subscribeEvent, v = Subscribed subs, (v + 1L)
+                        | Subscribe (x,y), _ ->
+                            let subscribeEvent, v = Subscribed (x,y), (v + 1L)
                             let outcome = toEvent ci v subscribeEvent |> input.SendToSagaStarter |> Persist
                             return! outcome
 
-                        | Unsubscribe subs, _ ->
-                            let subscribeEvent, v = Unsubscribed subs, (v + 1L)
+                        | Unsubscribe (x,y), _ ->
+                            let subscribeEvent, v = Unsubscribed (x,y), (v + 1L)
                             let outcome = toEvent ci v subscribeEvent |> input.SendToSagaStarter |> Persist
                             return! outcome
 

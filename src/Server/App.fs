@@ -26,6 +26,8 @@ let appHandler env : HttpHandler =
                 let query = env :> IQuery<_>
                 let! regions = query.Query<Region>()
 
+    
+
                 let regions =
                     regions |> List.map (fun r -> {| Id = r.RegionId.Value; Name = r.Name.Value |})
 

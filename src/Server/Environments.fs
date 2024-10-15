@@ -6,6 +6,7 @@ open AlarmsGlobal.ServerInterfaces.Query
 open System
 open Microsoft.Extensions.Logging
 open Shared.Command.Authentication
+open Shared.Command.Subscription
 //open FCQRS.ModelQuery
 open FCQRS.Model
 open System.Threading
@@ -41,6 +42,11 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) as self=
     interface IAuthentication with
         member this.LinkIdentity(cid: CID) : LinkIdentity = commandApi.LinkIdentity cid
         member this.UnlinkIdentity(cid: CID) : UnlinkIdentity = commandApi.UnlinkIdentity cid
+
+    interface ISubscription with
+        member this.Subscribe(cid: CID) : Subscribe = commandApi.Subscribe cid
+        member this.Unsubscribe(cid: CID) : Unsubscribe = commandApi.Unsubscribe cid
+        member this.PublishEvent(cid: CID) : PublishEvent = failwith "Not implemented"
 
     interface IQuery<DataEventType> with
             member _.Query<'t>(?filter, ?orderby, ?orderbydesc, ?thenby, ?thenbydesc, ?take, ?skip, ?cacheKey) =

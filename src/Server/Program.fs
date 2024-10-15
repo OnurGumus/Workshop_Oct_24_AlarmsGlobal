@@ -17,6 +17,14 @@ open Hocon.Extensions.Configuration
 open Microsoft.AspNetCore.Http
 open Master
 open AppHandler
+open FCQRS.Model
+open FCQRS.ModelQuery
+open System.Threading
+open Microsoft.Extensions.Logging
+open AlarmsGlobal.ServerInterfaces.Command
+open AlarmsGlobal.Shared.Model.Authentication
+open System.Security.Claims
+open AlarmsGlobal.Shared.Model.Subscription
 
 bootstrapLogger ()
 
@@ -42,12 +50,29 @@ let indexHandler: HttpHandler =
             return! renderInMaster body next ctx
         }
 
+let subscribe env : HttpHandler =
+    fun next ctx ->
+        task {
+            let cid = CID.CreateNew()
+            let query = env :> IQuery<_>
+            let s =
+                query.Subscribe((fun e -> e.CID = cid), 1, ignore, CancellationToken.None) |> Async.StartImmediateAsTask
+            let subs = env :> ISubscription
+            let form = ctx.Request.Form
+            let region = form.["region"][0] |> RegionId.Create
+            let identity = ctx.User.FindFirst(ClaimTypes.Name).Value |> UserIdentity.Create
+            let! _ = subs.Subscribe cid (Some identity) region
+            do! s |> Async.AwaitTask
+            return! appHandler env next ctx
+        }
+
 let handlers env =
     choose [
         GET >=> route "/" >=> indexHandler
         GET >=> route "/app" >=> appHandler env
         POST >=> route "/signout" >=> signOutHandler
         POST >=> route "/signin-google" >=> signGoogleHandler env
+        POST >=> route "/subscribe" >=> subscribe env
     ]
 
 let authenticationOptions (opt: AuthenticationOptions) =

@@ -1,6 +1,7 @@
 ﻿module AlarmsGlobal.Command.API
 
 open AlarmsGlobal.Shared.Command.Authentication
+open AlarmsGlobal.Shared.Command.Subscription
 open Microsoft.Extensions.Logging
 open FCQRS.Model
 open FCQRS.Actor
@@ -11,6 +12,8 @@ open Microsoft.Extensions.Configuration
 type IAPI =
     abstract LinkIdentity: CID -> LinkIdentity
     abstract UnlinkIdentity: CID -> UnlinkIdentity
+    abstract Subscribe: CID -> Subscribe
+    abstract Unsubscribe: CID -> Unsubscribe
     abstract ActorApi: IActor
 
 let api (env: _) =
@@ -24,6 +27,9 @@ let api (env: _) =
     let userSubs cid =
         createCommandSubscription actorApi domainApi.UserFactory cid
 
+    let subsSubs cid =
+        createCommandSubscription actorApi domainApi.SubscriptionsFactory cid
+
     { new IAPI with
 
         member this.LinkIdentity cid : LinkIdentity =
@@ -32,6 +38,13 @@ let api (env: _) =
         member this.UnlinkIdentity cid : UnlinkIdentity =
             AuthenticationHandler.unlinkIdentity (userSubs cid.Value)
 
+
         member _.ActorApi = actorApi
+
+        member this.Subscribe(cid: CID) : Subscribe =
+            SubscriptionCommandHandler.subscribe (subsSubs cid.Value)
+
+        member this.Unsubscribe(cid: CID) : Unsubscribe =
+            SubscriptionCommandHandler.unsubscribe (subsSubs cid.Value)
 
     }
