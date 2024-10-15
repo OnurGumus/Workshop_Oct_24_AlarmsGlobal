@@ -1,7 +1,5 @@
 module AlarmsGlobal.Shared.Command
 
-open AlarmsGlobal.Shared.Model
-open AlarmsGlobal.Shared.Model
 open AlarmsGlobal.Shared.Model.Authentication
 open FCQRS.Model
 

@@ -1,6 +1,5 @@
 module SubscriptionCommandHandler
 
-open AlarmsGlobal.Shared.Model.Subscription
 open AlarmsGlobal.Shared.Command.Subscription
 open FCQRS.Model
 open FCQRS.Common

@@ -20,7 +20,6 @@ open AppHandler
 open FCQRS.Model
 open FCQRS.ModelQuery
 open System.Threading
-open Microsoft.Extensions.Logging
 open AlarmsGlobal.ServerInterfaces.Command
 open AlarmsGlobal.Shared.Model.Authentication
 open System.Security.Claims
@@ -30,7 +29,6 @@ bootstrapLogger ()
 
 module Templates =
     let index = TextFile.wwwroot.html.``index.html``.Text
-
 
 
 let indexPage (ctx: HttpContext) (dataloginurl: string) =
