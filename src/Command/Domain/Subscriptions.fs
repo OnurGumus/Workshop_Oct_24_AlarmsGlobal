@@ -60,7 +60,7 @@ module Actor =
                             return! set state
 
                     | :? (Common.Command<Command>) as msg, _ ->
-                        let query = config :?> IQuery<_>
+                        let query = env :> IQuery<_>
                         let regions = query.Query<Region>(cacheKey = "regions") |> Async.RunSynchronously
 
                         let ci = msg.CorrelationId

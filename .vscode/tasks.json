@@ -6,11 +6,39 @@
         {
             "label": "Build Server",
             "command": "dotnet",
-            "args": [ "build" ],
+            "args": [
+                "build"
+            ],
             "type": "shell",
-            "options": { "cwd": "${workspaceFolder}/src/Server" },
+            "options": {
+                "cwd": "${workspaceFolder}/src/Server"
+            },
             "group": "build",
-            "problemMatcher": [ "$msCompile" ]
+            "problemMatcher": [
+                "$msCompile"
+            ]
         },
+        {
+            "label": "Watch Server",
+            "command": "dotnet",
+            "args": [
+                "watch"
+            ],
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/src/Server"
+            },
+            "presentation": {
+                "reveal": "always",
+                "close": true
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        }
     ]
 }
