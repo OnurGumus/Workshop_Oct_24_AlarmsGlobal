@@ -9,6 +9,8 @@
     <Compile Include="Serilog.fs" />
     <Compile Include="Environments.fs" />
     <Compile Include="Authentication.fs" />
+    <Compile Include="Master.fs" />
+    <Compile Include="App.fs" />
     <Compile Include="Program.fs" />
     <Content Include="wwwroot\html\master.html" />
     <Content Include="wwwroot\html\index.html" />

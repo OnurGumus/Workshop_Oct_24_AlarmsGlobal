@@ -15,32 +15,16 @@ open Serilog
 open AlarmsGlobal.Environments
 open Hocon.Extensions.Configuration
 open Microsoft.AspNetCore.Http
+open Master
+open AppHandler
 
 bootstrapLogger ()
 
 module Templates =
     let master = TextFile.wwwroot.html.``master.html``.Text
     let index = TextFile.wwwroot.html.``index.html``.Text
-    let app = TextFile.wwwroot.html.``app.html``.Text
 
-let (|Development|Prod|) (ctx: HttpContext) =
-    if ctx.GetWebHostEnvironment().EnvironmentName = Environments.Development then
-        Development
-    else
-        Prod
 
-let renderInMaster (body: string) : HttpHandler =
-    fun next ctx ->
-        task {
-            let masterTemplate =
-                match ctx with
-                | Development -> File.ReadAllText TextFile.wwwroot.html.``master.html``.Path
-                | Prod -> Templates.master
-
-            let template = Template.Parse(masterTemplate)
-            let! page = template.RenderAsync({| body = body |})
-            return! htmlString page next ctx
-        }
 
 let indexPage (ctx: HttpContext) (dataloginurl: string) =
     let template =
@@ -56,23 +40,6 @@ let indexHandler: HttpHandler =
             let dataloginurl = "https://localhost:10201/signin-google"
             let! body = indexPage ctx (dataloginurl)
             return! renderInMaster body next ctx
-        }
-
-let appHandler: HttpHandler =
-    fun next ctx ->
-        task {
-            let isAuth = ctx.User.Identity.IsAuthenticated
-
-            if not isAuth then
-                return! setStatusCode 401 earlyReturn ctx
-            else
-                let template =
-                    match ctx with
-                    | Development -> File.ReadAllText TextFile.wwwroot.html.``app.html``.Path
-                    | Prod -> Templates.app
-
-                let! body = Template.Parse(template).RenderAsync().AsTask()
-                return! renderInMaster body next ctx
         }
 
 let handlers env =

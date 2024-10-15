@@ -7,4 +7,17 @@ Hello World!
     <form method="post" action="/signout">
         <button type="submit">Logout</button>
     </form>
+
+    <form id="eventForm" action="/admin/globalevent" method="post">
+       
+        <label for="region">Region:</label>
+        <selectlist id="region" name="region" required>
+            {{ for region in regions }}
+            <option value="{{ region.id }}">{{ region.name }}</x-option>
+            {{ end }}
+        </selectlist>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+    
 </main>
