@@ -1,7 +1,9 @@
 ﻿module rec AlarmsGlobal.Shared.Model
+
 open FCQRS.ModelValidation
 open FCQRS.Model
 open System
+
 module Authentication =
     open System.Text.RegularExpressions
 
@@ -70,16 +72,18 @@ module Authentication =
         endpoint: string
         expirationTime: int option
         keys: SubscriptionKeys
-    } 
+    }
 
 
     type UserClientId =
         | Email of Email
         | PushSubscription of PushSubscription
+
         override this.ToString() =
             match this with
             | Email email -> email.Value
             | PushSubscription pushSubscription -> pushSubscription.endpoint
+
         member this.Type =
             match this with
             | Email _ -> "Email"
@@ -89,7 +93,7 @@ module Authentication =
         ClientId: UserClientId
         Identity: UserIdentity
         Version: FCQRS.Model.Version
-        Type : string
+        Type: string
     }
 
     type UserSettings = {
@@ -129,3 +133,89 @@ module Authentication =
 
     type Subject = ShortString
     type Body = LongString
+
+module Subscription =
+    type RegionType =
+        | Country
+        | World
+
+    type Tag = ShortString
+
+    type RegionId =
+        | RegionId of ShortString
+
+        member this.Value = let (RegionId rid) = this in rid
+
+        static member CreateNew() =
+            "Region_" + Guid.NewGuid().ToString()
+            |> ShortString.TryCreate
+            |> forceValidate
+            |> RegionId
+
+        static member Create(s: string) =
+            s |> ShortString.TryCreate |> forceValidate |> RegionId
+
+        static member Validate(s: LongString) =
+            s.Value |> ShortString.TryCreate |> forceValidate
+
+    type Region = {
+        RegionId: RegionId
+        RegionType: RegionType
+        ParentRegionId: RegionId option
+        AlrernateNames: ShortString list
+        Name: ShortString
+    }
+
+    type SubscriptionCategory =
+        | PublicHolidays
+        | Other
+
+    type UserSubscription = {
+        Identity: Authentication.UserIdentity option
+        ReminderDays: int list
+        Tags: Tag list
+        Category: SubscriptionCategory list
+        RegionId: RegionId
+    }
+
+    type UserSetting = { Identity: Authentication.UserIdentity; BeforeDays: int }
+
+    type GlobalEventId =
+        | GlobalEventId of ShortString
+
+        member this.Value = let (GlobalEventId rid) = this in rid
+
+        static member CreateNew() =
+            "GlobalEvent_" + Guid.NewGuid().ToString()
+            |> ShortString.TryCreate
+            |> forceValidate
+            |> GlobalEventId
+
+        static member Create(s: string) =
+            s |> ShortString.TryCreate |> forceValidate |> GlobalEventId
+
+        static member Validate(s: LongString) =
+            s.Value |> ShortString.TryCreate |> forceValidate
+
+    type Media = {
+        TwitterMedia: string option
+        TwitterMediaLink: string option
+        MailMediaLink: string option
+        MailMedia: string option
+        TwitterLink: string option
+    }
+
+    type GlobalEvent = {
+        GlobalEventId: GlobalEventId
+        Title: ShortString
+        Body: LongString
+        Media: Media option
+        Tags: Tag list
+        Categories: SubscriptionCategory list
+        EventDateInUTC: DateTime option
+        Source: ShortString option
+        Impact: int option
+        TargetRegion: RegionId list
+    } with
+
+        override this.ToString() = this.Title.Value
