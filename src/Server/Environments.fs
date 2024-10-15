@@ -6,8 +6,11 @@ open AlarmsGlobal.ServerInterfaces.Query
 open System
 open Microsoft.Extensions.Logging
 open Shared.Command.Authentication
-open FCQRS.ModelQuery
+//open FCQRS.ModelQuery
 open FCQRS.Model
+open System.Threading
+open FCQRS.ModelQuery
+
 
 type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) as self=
 
@@ -39,18 +42,33 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) as self=
         member this.LinkIdentity(cid: CID) : LinkIdentity = commandApi.LinkIdentity cid
         member this.UnlinkIdentity(cid: CID) : UnlinkIdentity = commandApi.UnlinkIdentity cid
 
-    interface IQuery with
-        member _.Query<'t>(?filter, ?orderby, ?orderbydesc, ?thenby, ?thenbydesc, ?take, ?skip, ?cacheKey) =
-            async {
-                let! res = queryApi (typeof<'t>, filter, orderby, orderbydesc, thenby, thenbydesc, take, skip, cacheKey)
-                return res |> Seq.cast<'t> |> List.ofSeq
-            }
-
-        member _.Subscribe(cb, cancellationToken) = ()
-        member _.Subscribe(filter, take, cb, cancellationToken) = 
-                async { 
-                    return () 
-            }
+    interface IQuery<DataEventType> with
+            member _.Query<'t>(?filter, ?orderby, ?orderbydesc, ?thenby, ?thenbydesc, ?take, ?skip, ?cacheKey) =
+                async {
+                    let! res =
+                        queryApi.Query(
+                            ty = typeof<'t>,
+                            ?filter = filter,
+                            ?orderby = orderby,
+                            ?orderbydesc = orderbydesc,
+                            ?thenby = thenby,
+                            ?thenbydesc = thenbydesc,
+                            ?take = take,
+                            ?skip = skip,
+                            ?cacheKey = cacheKey
+    
+                        )
+                    return res |> Seq.cast<'t> |> List.ofSeq
+                }
+    
+    
+            member _.Subscribe(cb, cancellationToken) =  
+                let ks = queryApi.Subscribe(cb)
+                cancellationToken.Register(fun _ ->ks.Shutdown()) |> ignore
+            member _.Subscribe(filter, take, cb, cancellationToken) =
+                let ks, res = queryApi.Subscribe(filter, take, cb)
+                cancellationToken.Register(fun _ ->ks.Shutdown()) |> ignore
+                res
 
     member this.Reset() = 
         Migrations.reset config
@@ -59,6 +77,7 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) as self=
 
     member _.Init() = 
         Migrations.init config
-        queryApi <- AlarmsGlobal.Query.API.queryApi config
         commandApi <- AlarmsGlobal.Command.API.api self
+        queryApi <- AlarmsGlobal.Query.API.queryApi config commandApi.ActorApi
+
 

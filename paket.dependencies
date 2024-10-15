@@ -23,3 +23,4 @@ nuget FCQRS
 nuget FCQRS.Model
 nuget Microsoft.Data.Sqlite
 nuget Microsoft.Extensions.Logging.Abstractions
+nuget Akka.Logger.Serilog
