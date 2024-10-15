@@ -10,9 +10,14 @@ open System
 type AutenticationEvent =
     | AccountLinked of UserIdentity * UserClientId
     | AccountUnlinked of UserIdentity * UserClientId
+    
+type SubscriptionEvent =
+    | Subscribed of UserClientId * UserIdentity
+    | Unsubscribed of UserClientId * UserIdentity
 
 type DataEventType =
     | AutenticationEvent of AutenticationEvent
+    | SubscriptionEvent of SubscriptionEvent
 
 [<Interface>]
 type ITimeProvider =

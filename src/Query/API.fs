@@ -5,7 +5,7 @@ open Projection
 open AlarmsGlobal.Shared.Model.Authentication
 open AlarmsGlobal.Shared.Model.Subscription
 open FCQRS.Serialization
-
+open SqlProvider
 let queryApi (config: IConfiguration) actorApi =
 
     let connString = config.GetSection("config:connection-string").Value

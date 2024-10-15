@@ -4,6 +4,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="SqlProvider.fs" />
+    <Compile Include="UserProjection.fs" />
+    <Compile Include="SubscriptionProjection.fs" />
     <Compile Include="Projection.fs" />
   </ItemGroup>
   <ItemGroup>
