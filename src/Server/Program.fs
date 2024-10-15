@@ -45,7 +45,7 @@ let indexHandler: HttpHandler =
 let handlers env =
     choose [
         GET >=> route "/" >=> indexHandler
-        GET >=> route "/app" >=> appHandler
+        GET >=> route "/app" >=> appHandler env
         POST >=> route "/signout" >=> signOutHandler
         POST >=> route "/signin-google" >=> signGoogleHandler env
     ]

@@ -7,17 +7,18 @@ Hello World!
     <form method="post" action="/signout">
         <button type="submit">Logout</button>
     </form>
-
-    <form id="eventForm" action="/admin/globalevent" method="post">
+    <h2>Subscribe to a Country</h2>
+    <form action="/Subscribe" method="post">
        
         <label for="region">Region:</label>
-        <selectlist id="region" name="region" required>
+        <select id="region" name="region" required>
             {{ for region in regions }}
             <option value="{{ region.id }}">{{ region.name }}</x-option>
             {{ end }}
-        </selectlist>
+            </select>
         <br>
-        <input type="submit" value="Submit">
+        <br>
+        <input type="submit" value="Subscribe">
     </form>
     
 </main>

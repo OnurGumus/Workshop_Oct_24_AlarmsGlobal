@@ -5,10 +5,12 @@ open Scriban
 open FSharp.Data.LiteralProviders
 open System.IO
 open Master
+open FCQRS.ModelQuery
+open AlarmsGlobal.Shared.Model.Subscription
 
 let appTemplate = TextFile.wwwroot.html.``app.html``.Text
 
-let appHandler: HttpHandler =
+let appHandler env : HttpHandler =
     fun next ctx ->
         task {
             let isAuth = ctx.User.Identity.IsAuthenticated
@@ -21,6 +23,12 @@ let appHandler: HttpHandler =
                     | Development -> File.ReadAllText TextFile.wwwroot.html.``app.html``.Path
                     | Prod -> appTemplate
 
-                let! body = Template.Parse(template).RenderAsync().AsTask()
+                let query = env :> IQuery<_>
+                let! regions = query.Query<Region>()
+
+                let regions =
+                    regions |> List.map (fun r -> {| Id = r.RegionId.Value; Name = r.Name.Value |})
+
+                let! body = Template.Parse(template).RenderAsync({| regions = regions |}).AsTask()
                 return! renderInMaster body next ctx
         }

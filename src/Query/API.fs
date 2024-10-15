@@ -3,6 +3,7 @@ module AlarmsGlobal.Query.API
 open Microsoft.Extensions.Configuration
 open Projection
 open AlarmsGlobal.Shared.Model.Authentication
+open AlarmsGlobal.Shared.Model.Subscription
 open FCQRS.Serialization
 
 let queryApi (config: IConfiguration) actorApi =
@@ -38,8 +39,16 @@ let queryApi (config: IConfiguration) actorApi =
 
                 augment <@ q @>
                 |> Seq.map (fun x -> x.Document |> decodeFromBytes<LinkedIdentity> :> obj)
-
-
+                elif ty = typeof<Region> then
+                    let q =
+                        query {
+                            for c in ctx.Main.Regions do
+                                select c
+                        }
+    
+                    augment <@ q @>
+                    |> Seq.map (fun x -> x.Document |> decodeFromBytes<Region> :> obj)
+    
             else
                 failwith "not implemented"
 
