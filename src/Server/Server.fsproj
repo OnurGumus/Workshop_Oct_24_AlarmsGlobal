@@ -10,6 +10,7 @@
     <Compile Include="Environments.fs" />
     <Compile Include="Authentication.fs" />
     <Compile Include="Master.fs" />
+    <Compile Include="Admin.fs" />
     <Compile Include="App.fs" />
     <Compile Include="Program.fs" />
     <Content Include="wwwroot\html\master.html" />
@@ -25,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Query\Query.fsproj" />
     <ProjectReference Include="..\Command\Command.fsproj" />
+    <Content Include="wwwroot\html\admin.html" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

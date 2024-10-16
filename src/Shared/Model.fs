@@ -193,13 +193,9 @@ module Subscription =
     
     type GlobalEvent = {
         GlobalEventId: GlobalEventId
-        Title: ShortString
         Body: LongString
-        Tags: Tag list
         EventDateInUTC: DateTime option
-        Source: ShortString option
-        Impact: int option
-        TargetRegion: RegionId list
+        TargetRegion: RegionId
     } with
 
-        override this.ToString() = this.Title.Value
+        override this.ToString() = this.Body.Value

@@ -50,6 +50,9 @@ let indexHandler: HttpHandler =
 let subscribe env : HttpHandler =
     fun next ctx ->
         task {
+            if not ctx.User.Identity.IsAuthenticated then
+                return! setStatusCode 401 earlyReturn ctx
+            else
             let cid = CID.CreateNew()
             let query = env :> IQuery<_>
             let s =
@@ -64,6 +67,7 @@ let subscribe env : HttpHandler =
             return! appHandler env next ctx
         }
 
+
 let handlers env =
     choose [
         GET >=> route "/" >=> indexHandler
@@ -71,6 +75,8 @@ let handlers env =
         POST >=> route "/signout" >=> signOutHandler
         POST >=> route "/signin-google" >=> signGoogleHandler env
         POST >=> route "/subscribe" >=> subscribe env
+        POST >=> route "/publish" >=>AdminHandler.publish env
+        GET >=> route "/admin" >=> AdminHandler.handler env
     ]
 
 let authenticationOptions (opt: AuthenticationOptions) =

@@ -1,0 +1,27 @@
+<h1>
+
+Admin
+</h1>
+
+<main>
+    <form method="post" action="/signout">
+        <button type="submit">Logout</button>
+    </form>
+    <h2>Subscribe to a Country</h2>
+    <form action="/subscribe" method="post">
+
+        <label for="region">Region:</label>
+        <select id="region" name="region" required>
+            {{ for region in regions }}
+            <option value="{{ region.id }}">{{ region.name }}</x-option>
+                {{ end }}
+        </select>
+        <br>
+        <br>
+        <textarea id="message" name="message" rows="4" cols="50" placeholder="Enter message here"></textarea>
+        <br>
+        <br>
+        <input type="submit" value="Subscribe">
+    </form>
+
+</main>

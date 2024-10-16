@@ -7,13 +7,13 @@ open FCQRS.Model
 open FCQRS.Actor
 open Microsoft.Extensions.Configuration
 
-
 [<Interface>]
 type IAPI =
     abstract LinkIdentity: CID -> LinkIdentity
     abstract UnlinkIdentity: CID -> UnlinkIdentity
     abstract Subscribe: CID -> Subscribe
     abstract Unsubscribe: CID -> Unsubscribe
+    abstract PublishEvent: CID -> PublishEvent
     abstract ActorApi: IActor
 
 let api (env: _) =
@@ -38,7 +38,6 @@ let api (env: _) =
         member this.UnlinkIdentity cid : UnlinkIdentity =
             AuthenticationHandler.unlinkIdentity (userSubs cid.Value)
 
-
         member _.ActorApi = actorApi
 
         member this.Subscribe(cid: CID) : Subscribe =
@@ -47,4 +46,6 @@ let api (env: _) =
         member this.Unsubscribe(cid: CID) : Unsubscribe =
             SubscriptionCommandHandler.unsubscribe (subsSubs cid.Value)
 
+        member this.PublishEvent cid : PublishEvent =
+            SubscriptionCommandHandler.publishEvent (subsSubs cid.Value)
     }
