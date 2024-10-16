@@ -46,7 +46,7 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) as self=
     interface ISubscription with
         member this.Subscribe(cid: CID) : Subscribe = commandApi.Subscribe cid
         member this.Unsubscribe(cid: CID) : Unsubscribe = commandApi.Unsubscribe cid
-        member this.PublishEvent(cid: CID) : PublishEvent = failwith "Not implemented"
+        member this.PublishEvent(cid: CID) : PublishEvent = commandApi.PublishEvent cid
 
     interface IQuery<DataEventType> with
             member _.Query<'t>(?filter, ?orderby, ?orderbydesc, ?thenby, ?thenbydesc, ?take, ?skip, ?cacheKey) =

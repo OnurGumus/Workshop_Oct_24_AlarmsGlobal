@@ -101,7 +101,7 @@ type Startup(config: IConfiguration) =
         |> ignore
 
     member __.Configure(app: IApplicationBuilder, env: IWebHostEnvironment, appEnv: AppEnv) =
-        appEnv.Reset()
+        appEnv.Init()
 
         app
             .UseAuthentication()

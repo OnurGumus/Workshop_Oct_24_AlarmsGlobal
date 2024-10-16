@@ -4,6 +4,7 @@ open AlarmsGlobal.Shared.Model
 open Authentication
 open FCQRS.Common
 open FCQRS
+open AlarmsGlobal.Shared.Model.Subscription
 
 type Event =
     | UserClientIdLinked of UserClientId * UserIdentity
@@ -14,6 +15,7 @@ type Event =
 type Command =
     | LinkUserClientId of UserClientId * UserIdentity
     | UnlinkUserClientId of UserClientId
+    | SendMessage of GlobalEvent
 
 
 type State = {
@@ -72,7 +74,9 @@ module internal Actor =
                         let toEvent = toEvent (msg.Id) msg.CorrelationId
 
                         match msg.CommandDetails, state with
-
+                        | SendMessage(globalEvent), _ ->
+                            logger.LogInformation("Sending message: {globalEvent}", globalEvent)
+                            return! set state
                         | UnlinkUserClientId(userClientId), _ ->
                             if state.UserClientIds |> List.exists (fun x -> x = userClientId) then
                                 let event =

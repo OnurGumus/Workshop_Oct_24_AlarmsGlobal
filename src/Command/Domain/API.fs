@@ -10,6 +10,12 @@ open AlarmsGlobal.Command.Domain
 
 let sagaCheck (env: _) toEvent actorApi (o: obj) =
     match o with
+    | :? (Event<Subscriptions.Event>) as e ->
+        match e with
+        | { EventDetails = Subscriptions.EventPublished _ } -> [
+            (SubscriptionsSaga.factory env toEvent actorApi, id |> Some |> PrefixConversion, o)
+          ]
+        | _ -> []
     | _ -> []
 
 [<Interface>]

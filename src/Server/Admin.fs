@@ -25,7 +25,7 @@ let publish env : HttpHandler =
                 let subs = env :> ISubscription
                 let form = ctx.Request.Form
                 let region = form.["region"][0] |> RegionId.Create
-                let text = form.["text"][0] |> LongString.TryCreate |> forceValidate
+                let text = form.["message"][0] |> LongString.TryCreate |> forceValidate
                 let globalEventId = GlobalEventId.CreateNew()
 
                 let globalEvent: GlobalEvent = {
