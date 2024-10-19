@@ -2,7 +2,7 @@
 
 open AlarmsGlobal.Shared.Command.Authentication
 open FCQRS.Model
-
+open AlarmsGlobal.Shared.Command.Subscription
 
 [<Interface>]
 type IAuthentication =
@@ -10,3 +10,7 @@ type IAuthentication =
     abstract UnlinkIdentity: CID -> UnlinkIdentity
         
         
+[<Interface>]
+type ISubscription =
+    abstract Subscribe: CID -> Subscribe
+    abstract Unsubscribe: CID -> Unsubscribe

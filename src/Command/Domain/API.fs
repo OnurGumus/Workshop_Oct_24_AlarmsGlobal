@@ -16,7 +16,7 @@ let sagaCheck (env: _) toEvent actorApi (o: obj) =
 type IDomain =
     abstract ActorApi: IActor
     abstract UserFactory: string -> IEntityRef<obj>
-    
+    abstract SubscriptionFactory: string -> IEntityRef<obj>
 
 let api (env: #_) (actorApi: IActor) =
         let toEvent ci =
@@ -25,6 +25,7 @@ let api (env: #_) (actorApi: IActor) =
         
         SagaStarter.init actorApi.System actorApi.Mediator scr
         User.Actor.init env toEvent actorApi |> ignore
+        Subscriptions.Actor.init env toEvent actorApi |> ignore
 
         System.Threading.Thread.Sleep(1000)
 
@@ -33,5 +34,8 @@ let api (env: #_) (actorApi: IActor) =
 
             member _.UserFactory entityId =
                 User.Actor.factory env toEvent actorApi entityId
+
+            member _.SubscriptionFactory entityId =
+                Subscriptions.Actor.factory env toEvent actorApi entityId 
         }
     
