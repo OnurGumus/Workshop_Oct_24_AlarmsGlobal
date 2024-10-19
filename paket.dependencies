@@ -16,11 +16,11 @@ nuget Serilog.Sinks.Seq
 nuget Serilog.Sinks.Console
 nuget Serilog.Sinks.File
 nuget Hocon.Extensions.Configuration
-nuget FSharp.Core
 nuget FluentMigrator.Runner.SQLite
 nuget FCQRS.Serialization
 nuget FCQRS.SQLProvider
 nuget Microsoft.Data.Sqlite
 nuget SQLitePCLRaw.core
 nuget FCQRS.Model
-nuget FCQRS.SqlProvider >= 1.0.4
+nuget Microsoft.Extensions.Logging.Abstractions
+nuget FCQRS
