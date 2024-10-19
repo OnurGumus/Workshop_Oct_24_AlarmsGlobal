@@ -69,7 +69,8 @@ module internal Actor =
 
                 actor {
                     match msg, state with
-                    | :? Persistence.RecoveryCompleted, _ -> return! state |> set
+                    | :? Persistence.RecoveryCompleted, _ -> 
+                        return! state |> set
                     | :? (Common.Command<Command>) as msg, _ ->
                         let toEvent = toEvent (msg.Id) msg.CorrelationId
 

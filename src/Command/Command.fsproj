@@ -10,6 +10,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.fsproj" />
     <ProjectReference Include="..\ServerInterfaces\ServerInterfaces.fsproj" />
+    <Compile Include="Domain\API.fs" />
+    <Compile Include="API.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

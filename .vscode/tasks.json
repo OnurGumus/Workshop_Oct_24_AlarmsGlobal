@@ -12,5 +12,14 @@
             "group": "build",
             "problemMatcher": [ "$msCompile" ]
         },
+        {
+            "label": "Watch Server",
+            "command": "dotnet",
+            "args": [ "watch" ],
+            "type": "shell",
+            "options": { "cwd": "${workspaceFolder}/src/Server" },
+            "group": "build",
+            "problemMatcher": [ "$msCompile" ]
+        },
     ]
 }

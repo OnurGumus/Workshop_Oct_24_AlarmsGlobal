@@ -9,7 +9,7 @@ open Shared.Command.Authentication
 open FCQRS.ModelQuery
 open FCQRS.Model
 
-type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
+type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory)  as self=
 
     let mutable queryApi = Unchecked.defaultof<_>
     let mutable commandApi = Unchecked.defaultof<_>
@@ -36,8 +36,8 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
         member _.GetSection key = config.GetSection(key)
 
     interface IAuthentication with
-        member this.LinkIdentity(cid: CID) : LinkIdentity = commandApi.LinkedIdentity
-        member this.UnlinkIdentity(cid: CID) : UnlinkIdentity = commandApi.UnlinkedIdentity
+        member this.LinkIdentity(cid: CID) : LinkIdentity = commandApi.LinkIdentity cid
+        member this.UnlinkIdentity(cid: CID) : UnlinkIdentity = commandApi.UnlinkIdentity cid
 
     interface IQuery with
         member _.Query<'t>(?filter, ?orderby, ?orderbydesc, ?thenby, ?thenbydesc, ?take, ?skip, ?cacheKey) =
@@ -59,6 +59,6 @@ type AppEnv(config: IConfiguration, loggerFactory: ILoggerFactory) =
 
     member _.Init() = 
         Migrations.init config
+        commandApi <- AlarmsGlobal.Command.API.api self
         queryApi <- AlarmsGlobal.Query.API.queryApi config
-        commandApi <- AlarmsGlobal.Query.API.Command.api config
 
