@@ -15,6 +15,24 @@ type Zero() =
 
     override this.Down() = ()
 
+[<MigrationAttribute(2L)>]
+type One() =
+    inherit Migration()
+
+    override this.Up() = ()
+
+    override this.Down() =
+        try
+            if this.Schema.Table("snapshot").Exists() then
+                // clean up akka stuff
+                this.Execute.Sql("DELETE FROM snapshot")
+                this.Execute.Sql("DELETE FROM JOURNAL")
+                this.Execute.Sql("DELETE FROM SQLITE_SEQUENCE")
+                this.Execute.Sql("DELETE FROM TAGS")
+        with _ ->
+            ()
+    
+
 
 [<MigrationAttribute(2024_10_10_2102L)>]
 type AddLinkedIdentityTable() =
@@ -47,6 +65,30 @@ type AddLinkedIdentityTable() =
             .NotNullable()
             .Indexed()
         |> ignore
+
+
+[<MigrationAttribute(2024_10_13_2101L)>]
+type AddOffsetsTable() =
+    inherit AutoReversingMigration()
+
+    override this.Up() =
+        this.Create
+            .Table("Offsets")
+            .WithColumn("OffsetName")
+            .AsString()
+            .PrimaryKey()
+            .WithColumn("OffsetCount")
+            .AsInt64()
+            .NotNullable()
+            .WithDefaultValue(0)
+        |> ignore
+
+        let dict: IDictionary<string, obj> = Dictionary()
+        dict.Add("OffsetName", "AlarmsGlobal")
+        dict.Add("OffsetCount", 0L)
+
+        this.Insert.IntoTable("Offsets").Row(dict) |> ignore
+        
 
 
 

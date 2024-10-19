@@ -4,3 +4,5 @@ FCQRS.Serialization
 FCQRS.SQLProvider
 Microsoft.Data.Sqlite
 SQLitePCLRaw.core
+FCQRS.Model
+FCQRS

@@ -14,3 +14,4 @@ Serilog.Sinks.File
 Hocon.Extensions.Configuration
 FCQRS.Model
 Akka.Logger.Serilog
+FCQRS
