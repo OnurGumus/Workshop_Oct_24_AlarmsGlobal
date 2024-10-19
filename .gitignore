@@ -4,3 +4,5 @@ obj/
 logs/
 src/Server/secrets.hocon
 *.db
+src/Server/Database/AlarmsGlobal.db-shm
+src/Server/Database/AlarmsGlobal.db-wal
