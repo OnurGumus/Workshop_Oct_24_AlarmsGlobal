@@ -9,6 +9,7 @@ open AlarmsGlobal.Shared.Command.Authentication
 open FCQRS.Serialization
 open FCQRS.Model
 open SqlProvider
+open AlarmsGlobal.Shared.Model.Subscription
 
 
 let queryApi (config: IConfiguration) actorApi =
@@ -41,13 +42,30 @@ let queryApi (config: IConfiguration) actorApi =
                         for c in ctx.Main.LinkedIdentities do
                             select c
                     }
-
                 augment <@ q @>
                 |> Seq.map (fun x -> x.Document |> decodeFromBytes<LinkedIdentity> :> obj)
 
+            elif ty = typeof<Region> then
+                let q =
+                    query {
+                        for c in ctx.Main.Regions do
+                            select c
+                    }
+                augment <@ q @>
+                |> Seq.map (fun x -> x.Document |> decodeFromBytes<Region> :> obj)
 
+            elif ty = typeof<UserSubscription> then
+                let q = 
+                    query {
+                        for c in ctx.Main.Subscriptions do
+                            select c
+                    }
+
+                augment <@ q @>
+                |> Seq.map(fun x -> x.Document |> decodeFromBytes<UserSubscription> :> obj)
             else
                 failwith "not implemented"
+
 
 
 
