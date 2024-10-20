@@ -4,6 +4,7 @@ open System.Security.Cryptography
 open System.Text
 open AlarmsGlobal.Shared.Model.Authentication
 open AlarmsGlobal.Shared.Command.Authentication
+open AlarmsGlobal.Shared.Command.Subscription
 open AlarmsGlobal.ServerInterfaces.Command
 open Microsoft.Extensions.Logging
 open FCQRS.Model
@@ -17,6 +18,8 @@ open AuthenticationHandler
 type IAPI =
     abstract LinkIdentity: CID -> LinkIdentity
     abstract UnlinkIdentity: CID -> UnlinkIdentity
+    abstract Subscribe: CID -> Subscribe
+    abstract Unsubscribe: CID -> Unsubscribe
     abstract ActorApi: IActor
 
 let api (env: _) =
@@ -29,6 +32,9 @@ let api (env: _) =
 
     let userSubs cid =
         createCommandSubscription actorApi domainApi.UserFactory cid
+    
+    let subSubs cid =
+        createCommandSubscription actorApi domainApi.SubscriptionFactory cid
 
 
     { new IAPI with
@@ -40,5 +46,11 @@ let api (env: _) =
             AuthenticationHandler.unlinkIdentity (userSubs cid.Value)
             
         member _.ActorApi = actorApi
+
+        member this.Subscribe cid : Subscribe = 
+            SubscriptionsCommandHandler.subscribe (subSubs cid.Value)
+
+        member this.Unsubscribe cid : Unsubscribe = 
+            SubscriptionsCommandHandler.unsubscribe (subSubs cid.Value)
 
     }

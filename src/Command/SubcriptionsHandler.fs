@@ -21,3 +21,19 @@ let subscribe (createSubs) : Subscribe =
              } -> return Ok(Version v)
             | _ -> return failwithf "unexpected event %A" subscribe
         }
+
+let unsubscribe (createSubs) : Unsubscribe =
+    fun userSubscription ->
+        async{
+            let! subscribe =
+                createSubs "Subscriptions" (Domain.Subscriptions.Command.Unsubscribe (userSubscription))(function 
+                    | Domain.Subscriptions.Unsubscribed _ -> true
+                    | _ -> false)
+        
+            match subscribe with
+            | {
+                EventDetails = Domain.Subscriptions.Unsubscribed _
+                Version = v
+             } -> return Ok(Version v)
+            | _ -> return failwithf "unexpected event %A" subscribe
+        }

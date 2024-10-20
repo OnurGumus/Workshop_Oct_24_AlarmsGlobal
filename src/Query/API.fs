@@ -8,7 +8,7 @@ open AlarmsGlobal.Shared.Model.Authentication
 open AlarmsGlobal.Shared.Command.Authentication
 open FCQRS.Serialization
 open FCQRS.Model
-
+open SqlProvider
 
 
 let queryApi (config: IConfiguration) actorApi =

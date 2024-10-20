@@ -3,13 +3,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Projection.fs" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.fsproj" />
     <ProjectReference Include="..\ServerInterfaces\ServerInterfaces.fsproj" />
     <Compile Include="Migrations.fs" />
+    <Compile Include="SqlProvider.fs" />
+    <Compile Include="UserProjection.fs" />
+    <Compile Include="SubscriptionProjection.fs" />
+    <Compile Include="Projection.fs" />
     <Compile Include="API.fs" />
     <Content Include="paket.references" />
   </ItemGroup>
