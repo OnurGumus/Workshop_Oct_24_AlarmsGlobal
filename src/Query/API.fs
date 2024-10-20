@@ -68,7 +68,6 @@ let queryApi (config: IConfiguration) actorApi =
 
 
 
-
         async { return res }
 
     Projection.init connString actorApi query

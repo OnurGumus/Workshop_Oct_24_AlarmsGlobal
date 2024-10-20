@@ -31,7 +31,6 @@ let handleEventWrapper (ctx: Sql.dataContext) (actorApi: IActor) (subQueue: ISou
         let offset = ctx.Main.Offsets.Individuals.AlarmsGlobal
         offset.OffsetCount <- offsetValue
         ctx.SubmitUpdates()
-        ctx.``Design Time Commands``.SaveContextSchema.``Saved /Users/onurgumus/Workshop/AlarmsGlobal/src/Query/../Server/Database/Schema.sqlite at 11:47:48``
 
         match (dataEvent: DataEvent<DataEventType> option) with
         | Some dataEvent -> subQueue.OfferAsync(dataEvent).Wait()
