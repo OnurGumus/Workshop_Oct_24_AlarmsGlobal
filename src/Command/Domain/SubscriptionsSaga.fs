@@ -30,7 +30,7 @@ type SagaState = { Data: SagaData; State: State }
 let initialState = { State = NotStarted; Data = NA }
 
 let actorProp (env: _) (actorApi: IActor) (mediator: IActorRef<_>) (mailbox: Eventsourced<obj>) =
-    let cid = (mailbox.Self.Path.Name |> SagaStarter.toRawGuid)
+    let cid = (mailbox.Self.Path.Name |> SagaStarter.toCid)
     let log = mailbox.UntypedContext.GetLogger()
     let logger = env :> ILoggerFactory |> fun x -> x.CreateLogger("SubscriptionsSaga")
     let createCommand command = {
