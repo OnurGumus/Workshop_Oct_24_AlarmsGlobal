@@ -13,6 +13,7 @@ let handle (ctx: Sql.dataContext) eventDetails cid =
     let cid = CID.Create cid
     match eventDetails with
     | Subscriptions.Subscribed(userSubscription) ->
+        //if record exist then ruturn some data event
         let row = ctx.Main.Subscriptions.``Create(Document)``(encodeToBytes userSubscription)
         row.RegionId <- userSubscription.RegionId.Value.Value
         row.UserIdentity <- userSubscription.Identity.Value.Value
