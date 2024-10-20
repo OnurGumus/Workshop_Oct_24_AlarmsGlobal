@@ -7,4 +7,22 @@ Hello World!
     <form method="post" action="/signout">
         <button type="submit">Logout</button>
     </form>
+
+    <h2>Subscribe to a Country</h2>
+    <form action="/subscribe" method="post">
+
+        <label for="region">Region:</label>
+        <select id="region" name="region" required>
+            {{ for region in regions }}
+            <option value="{{ region.id }}">{{ region.name }}</x-option>
+                {{ end }}
+        </select>
+        <br>
+        <br>
+        <input type="submit" value="Subscribe">
+    </form>
+    <ul> {{ for subs in subscriptions }} 
+        <li>{{ subs.region_id.value.value }}</li>
+        {{ end }}
+    </ul>
 </main>

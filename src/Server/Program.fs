@@ -15,6 +15,13 @@ open Serilog
 open AlarmsGlobal.Environments
 open Hocon.Extensions.Configuration
 open Microsoft.AspNetCore.Http
+open FCQRS.ModelQuery
+open AlarmsGlobal.Shared.Model.Subscription
+open System.Security.Claims
+open FCQRS.Model
+open System.Threading
+open AlarmsGlobal.ServerInterfaces.Command
+open AlarmsGlobal.Shared.Model.Authentication
 
 bootstrapLogger ()
 
@@ -58,7 +65,7 @@ let indexHandler: HttpHandler =
             return! renderInMaster body next ctx
         }
 
-let appHandler: HttpHandler =
+let appHandler env : HttpHandler =
     fun next ctx ->
         task {
             let isAuth = ctx.User.Identity.IsAuthenticated
@@ -71,16 +78,55 @@ let appHandler: HttpHandler =
                     | Development -> File.ReadAllText TextFile.wwwroot.html.``app.html``.Path
                     | Prod -> Templates.app
 
-                let! body = Template.Parse(template).RenderAsync().AsTask()
+                let query = env :> IQuery<_>
+                let! regions = query.Query<Region>()
+                let userName = ctx.User.FindFirst(ClaimTypes.Name).Value
+                // UserIdentity
+                let! subscriptions = query.Query<UserSubscription>(Predicate.Equal("UserIdentity", userName))
+
+                let regions =
+                    regions |> List.map (fun r -> {| Id = r.RegionId.Value; Name = r.Name.Value |})
+
+
+                let! body =
+                    Template
+                        .Parse(template)
+                        .RenderAsync({| regions = regions; subscriptions = subscriptions |})
+                        .AsTask()
+
                 return! renderInMaster body next ctx
+        }
+
+let subscribe env : HttpHandler =
+    fun next ctx ->
+        task {
+            if not ctx.User.Identity.IsAuthenticated then
+                return! setStatusCode 401 earlyReturn ctx
+            else
+                let cid = CID.CreateNew()
+                let query = env :> IQuery<_>
+
+                let dataEventSubs =
+                    query.Subscribe((fun e -> e.CID = cid), 1, ignore, CancellationToken.None)
+                    |> Async.StartImmediateAsTask
+
+                let commandInterface = env :> ISubscription
+                let form = ctx.Request.Form
+                let region = form.["region"][0] |> RegionId.Create
+                let identity = ctx.User.FindFirst(ClaimTypes.Name).Value |> UserIdentity.Create
+                let userSubsc = { RegionId = region; Identity = identity }
+                let! _ = commandInterface.Subscribe cid userSubsc
+                do! dataEventSubs
+                return! appHandler env next ctx
         }
 
 let handlers env =
     choose [
         GET >=> route "/" >=> indexHandler
-        GET >=> route "/app" >=> appHandler
+        GET >=> route "/app" >=> appHandler env
         POST >=> route "/signout" >=> signOutHandler
         POST >=> route "/signin-google" >=> signGoogleHandler env
+        POST >=> route "/subscribe" >=> subscribe env
     ]
 
 let authenticationOptions (opt: AuthenticationOptions) =

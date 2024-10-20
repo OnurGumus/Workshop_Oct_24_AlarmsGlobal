@@ -33,5 +33,5 @@ type Sql =
         CaseSensitivityChange=CaseSensitivityChange.ORIGINAL
      >
 
-// QueryEvents.SqlQueryEvent
-// |> Event.add (fun query -> Log.Debug("Executing SQL {query}:", query))
+QueryEvents.SqlQueryEvent
+|> Event.add (fun query -> printf "%A Executing SQL {query}:" query)
