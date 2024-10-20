@@ -14,3 +14,4 @@ type IAuthentication =
 type ISubscription =
     abstract Subscribe: CID -> Subscribe
     abstract Unsubscribe: CID -> Unsubscribe
+    abstract PublishEvent: CID -> PublishEvent

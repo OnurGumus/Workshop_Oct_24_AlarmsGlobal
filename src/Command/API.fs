@@ -20,6 +20,7 @@ type IAPI =
     abstract UnlinkIdentity: CID -> UnlinkIdentity
     abstract Subscribe: CID -> Subscribe
     abstract Unsubscribe: CID -> Unsubscribe
+    abstract PublishEvent: CID -> PublishEvent
     abstract ActorApi: IActor
 
 let api (env: _) =
@@ -52,5 +53,6 @@ let api (env: _) =
 
         member this.Unsubscribe cid : Unsubscribe = 
             SubscriptionsCommandHandler.unsubscribe (subSubs cid.Value)
-
+        member this.PublishEvent cid : PublishEvent = 
+            SubscriptionsCommandHandler.publishEvent (subSubs cid.Value)
     }

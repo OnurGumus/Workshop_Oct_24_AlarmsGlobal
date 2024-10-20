@@ -6,6 +6,21 @@ open FCQRS.Common
 
 open AlarmsGlobal.Command
 
+let publishEvent (createSubs) : PublishEvent =
+    fun globalEvent ->
+        async {
+            let! subscribe =
+                createSubs ("Subscriptions") (Domain.Subscriptions.Command.PublishEvent globalEvent) (function
+                    | Domain.Subscriptions.EventPublished _ -> true
+                    | _ -> false)
+
+            match subscribe with
+            | {
+                  EventDetails = Domain.Subscriptions.EventPublished _
+                  Version = v
+              } -> return Ok(Version v)
+            | other -> return failwithf "unexpected event %A" other
+        }
 let subscribe (createSubs) : Subscribe =
     fun userSubscription ->
         async{

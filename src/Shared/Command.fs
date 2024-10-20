@@ -13,3 +13,4 @@ module Subscription =
     
         type Subscribe = UserSubscription-> Async<Result<Version, string list>>
         type Unsubscribe = UserSubscription -> Async<Result<Version, string list>>
+        type PublishEvent = GlobalEvent -> Async<Result<Version, string list>>

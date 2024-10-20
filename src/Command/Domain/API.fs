@@ -10,8 +10,13 @@ open AlarmsGlobal.Command.Domain
 
 let sagaCheck (env: _) toEvent actorApi (o: obj) =
     match o with
+    | :? (Event<Subscriptions.Event>) as e ->
+        match e with
+        | { EventDetails = Subscriptions.EventPublished _ } -> [
+            (SubscriptionsSaga.factory env toEvent actorApi, id |> Some |> PrefixConversion, o)
+          ]
+        | _ -> []
     | _ -> []
-
 [<Interface>]
 type IDomain =
     abstract ActorApi: IActor
@@ -26,6 +31,7 @@ let api (env: #_) (actorApi: IActor) =
         SagaStarter.init actorApi.System actorApi.Mediator scr
         User.Actor.init env toEvent actorApi |> ignore
         Subscriptions.Actor.init env toEvent actorApi |> ignore
+        SubscriptionsSaga.init env actorApi |> ignore
 
         System.Threading.Thread.Sleep(1000)
 

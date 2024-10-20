@@ -6,6 +6,7 @@
   <ItemGroup>
     <Compile Include="Domain\User.fs" />
     <Compile Include="Domain\Subscriptions.fs" />
+    <Compile Include="Domain\SubscriptionsSaga.fs" />
     <Compile Include="Domain\API.fs" />
     <Compile Include="AuthenticationHandler.fs" />
     <Compile Include="SubcriptionsHandler.fs" />

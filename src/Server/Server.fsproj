@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Query\Query.fsproj" />
     <ProjectReference Include="..\Command\Command.fsproj" />
+    <Content Include="wwwroot\html\admin.html" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
